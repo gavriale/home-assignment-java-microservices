@@ -115,6 +115,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<!-- Not inherited from spring-boot-starter-parent here (see CLAUDE.md build
+					 notes), so the repackage execution that makes this jar executable must be
+					 bound explicitly rather than relying on the starter parent's default. -->
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -49,6 +49,68 @@ services:
     networks:
       - messaging-net
 
+  message-api:
+    build:
+      context: ..
+      dockerfile: message-api/Dockerfile
+    container_name: messaging-api
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8081:8081"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8081/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - messaging-net
+
+  message-processor:
+    build:
+      context: ..
+      dockerfile: message-processor/Dockerfile
+    # No container_name/host port mapping: this is the service scaled out in the demo
+    # (`docker compose up --scale message-processor=3`), and both are per-container.
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_DB: ${POSTGRES_DB:-messages}
+      POSTGRES_USER: ${POSTGRES_USER:-messages}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-messages}
+    expose:
+      - "8082"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8082/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - messaging-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: messaging-kafka-ui
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    ports:
+      - "8080:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    networks:
+      - messaging-net
+
 networks:
   messaging-net:
     driver: bridge
