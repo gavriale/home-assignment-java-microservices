@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: message-processor
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/messages}
+    username: ${DB_USERNAME:messages}
+    password: ${DB_PASSWORD:messages}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    consumer:
+      enable-auto-commit: false
+      auto-offset-reset: earliest
+
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+
+messaging:
+  kafka:
+    consumer:
+      concurrency: 6
+      max-poll-records: 500
+    topics:
+      partition-count: 6
+      replication-factor: 1
+    retry:
+      max-retries: 3
+      initial-interval: 500ms
+      multiplier: 2.0
+      max-interval: 5s
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  datasource:
+    url: jdbc:postgresql://postgres:5432/${POSTGRES_DB:messages}
+    username: ${POSTGRES_USER:messages}
+    password: ${POSTGRES_PASSWORD:messages}
+  kafka:
+    bootstrap-servers: kafka:9092

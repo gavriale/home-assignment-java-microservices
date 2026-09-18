@@ -1,0 +1,4 @@
+CREATE TABLE messages (
+    id  INTEGER PRIMARY KEY,
+    msg VARCHAR(1000) NOT NULL
+);

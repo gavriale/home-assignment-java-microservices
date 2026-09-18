@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: message-api
+  threads:
+    virtual:
+      enabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    producer:
+      acks: all
+      retries: 2147483647
+      compression-type: snappy
+      batch-size: 32768
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        linger.ms: 10
+        spring.json.add.type.headers: false
+
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+
+messaging:
+  kafka:
+    topics:
+      partition-count: 6
+      replication-factor: 1
+    reply:
+      timeout: 3s
+      partition-count: 6
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+  kafka:
+    bootstrap-servers: kafka:9092
