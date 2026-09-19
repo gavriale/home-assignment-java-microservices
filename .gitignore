@@ -1,5 +1,9 @@
 HELP.md
 target/
+
+### Not part of the submission (kept locally, never tracked) ###
+CLAUDE.md
+*.pdf
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
