@@ -14,6 +14,8 @@ import com.alex.messaging.header.Headers;
 import com.alex.messaging.topic.Topics;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.requestreply.KafkaReplyTimeoutException;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
@@ -36,6 +38,8 @@ import java.util.concurrent.ExecutionException;
  */
 @Component
 public class KafkaMessagePublisher implements MessagePublisher {
+
+    private static final Logger log = LoggerFactory.getLogger(KafkaMessagePublisher.class);
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ReplyingKafkaTemplate<String, Object, ReadReply> replyingKafkaTemplate;
@@ -73,6 +77,7 @@ public class KafkaMessagePublisher implements MessagePublisher {
         RequestReplyFuture<String, Object, ReadReply> future = replyingKafkaTemplate.sendAndReceive(record);
         try {
             ConsumerRecord<String, ReadReply> response = future.get();
+            logPublished(event.messageId(), future.getSendFuture().get());
             return response.value();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -83,6 +88,20 @@ public class KafkaMessagePublisher implements MessagePublisher {
             }
             throw new PublishFailedException(Topics.READ, event.messageId(), e.getCause());
         }
+    }
+
+    /**
+     * Create/Update/Delete get their "published id=... topic=... partition=... offset=..."
+     * line from {@code MessageService.logPublished}, using the {@link PublishResult} this
+     * class hands back. Read has no equivalent return value to hang that on — it returns the
+     * business {@link ReadReply}, not publish metadata — so it logs its own request-publish
+     * outcome here instead, restoring the same boundary-crossing visibility CLAUDE.md §5.10
+     * expects for every operation, not just the three that mutate state.
+     */
+    private void logPublished(int messageId, SendResult<String, Object> result) {
+        var metadata = result.getRecordMetadata();
+        log.info("published id={} topic={} partition={} offset={}",
+                messageId, metadata.topic(), metadata.partition(), metadata.offset());
     }
 
     private PublishResult send(String topic, MessageEvent event) {
