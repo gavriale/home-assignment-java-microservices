@@ -50,9 +50,7 @@ public class KafkaMessagePublisher implements MessagePublisher {
     }
 
     @Override
-    public PublishResult publishCreate(CreateRequested event) {
-        return send(Topics.CREATE, event);
-    }
+    public PublishResult publishCreate(CreateRequested event) { return send(Topics.CREATE, event); }
 
     @Override
     public PublishResult publishUpdate(UpdateRequested event) {

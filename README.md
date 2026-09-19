@@ -105,7 +105,15 @@ curl -i -X POST http://localhost:8081/api/v1/messages \
   `processor-read`).
 - **Logs** — every log line carries the correlation id and message id
   (`docker compose logs -f message-api message-processor`). Boundary crossings are logged at
-  `INFO` with partition/offset; payloads only at `DEBUG`.
+  `INFO` with partition/offset; payloads only at `DEBUG`. Structured JSON (`LogstashEncoder`),
+  so each line is a parseable object, not a string to regex — e.g. `POST /api/v1/messages`
+  produces:
+  ```json
+  {"@timestamp":"2026-09-19T07:47:30.28Z","message":"published id=888 topic=messages.create.v1 partition=2 offset=1","logger_name":"com.alex.messaging.api.application.MessageService","level":"INFO","X-Correlation-Id":"7165ace1-11df-45f5-bf9f-5e451795b4f4"}
+  ```
+  The same `X-Correlation-Id` then reappears on `message-processor`'s `consumed`/`applied` lines
+  for that record — `docker compose logs message-api message-processor --no-log-prefix | Select-String "<id>"`
+  (PowerShell) / `grep` (bash) pulls one request's full story out of both services at once.
 - **Actuator** — `curl http://localhost:8081/actuator/health`,
   `.../actuator/metrics`, `.../actuator/prometheus` (same on `:8082` from inside the Docker
   network, or via `docker compose exec message-processor curl localhost:8082/actuator/health`
