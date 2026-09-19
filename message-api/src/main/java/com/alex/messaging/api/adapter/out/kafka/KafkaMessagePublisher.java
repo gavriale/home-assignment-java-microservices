@@ -1,7 +1,6 @@
 package com.alex.messaging.api.adapter.out.kafka;
 
 import com.alex.messaging.api.application.MessagePublisher;
-import com.alex.messaging.api.application.PublishResult;
 import com.alex.messaging.api.domain.exception.PublishFailedException;
 import com.alex.messaging.api.domain.exception.ReplyTimeoutException;
 import com.alex.messaging.event.CreateRequested;
@@ -54,16 +53,18 @@ public class KafkaMessagePublisher implements MessagePublisher {
     }
 
     @Override
-    public PublishResult publishCreate(CreateRequested event) { return send(Topics.CREATE, event); }
-
-    @Override
-    public PublishResult publishUpdate(UpdateRequested event) {
-        return send(Topics.UPDATE, event);
+    public void publishCreate(CreateRequested event) {
+        send(Topics.CREATE, event);
     }
 
     @Override
-    public PublishResult publishDelete(DeleteRequested event) {
-        return send(Topics.DELETE, event);
+    public void publishUpdate(UpdateRequested event) {
+        send(Topics.UPDATE, event);
+    }
+
+    @Override
+    public void publishDelete(DeleteRequested event) {
+        send(Topics.DELETE, event);
     }
 
     @Override
@@ -91,12 +92,11 @@ public class KafkaMessagePublisher implements MessagePublisher {
     }
 
     /**
-     * Create/Update/Delete get their "published id=... topic=... partition=... offset=..."
-     * line from {@code MessageService.logPublished}, using the {@link PublishResult} this
-     * class hands back. Read has no equivalent return value to hang that on — it returns the
-     * business {@link ReadReply}, not publish metadata — so it logs its own request-publish
-     * outcome here instead, restoring the same boundary-crossing visibility CLAUDE.md §5.10
-     * expects for every operation, not just the three that mutate state.
+     * The one place every operation's "published id=... topic=... partition=... offset=..."
+     * line is logged — {@link #send} and {@link #publishReadAndAwaitReply} both call this with
+     * their own {@link SendResult} rather than threading publish metadata back up through
+     * {@code MessageService}, which never needed it for anything but this log line
+     * (CLAUDE.md §5.10).
      */
     private void logPublished(int messageId, SendResult<String, Object> result) {
         var metadata = result.getRecordMetadata();
@@ -104,13 +104,12 @@ public class KafkaMessagePublisher implements MessagePublisher {
                 messageId, metadata.topic(), metadata.partition(), metadata.offset());
     }
 
-    private PublishResult send(String topic, MessageEvent event) {
+    private void send(String topic, MessageEvent event) {
         var record = new ProducerRecord<String, Object>(topic, String.valueOf(event.messageId()), event);
         record.headers().add(Headers.CORRELATION_ID, event.correlationId().getBytes(StandardCharsets.UTF_8));
         try {
             SendResult<String, Object> result = kafkaTemplate.send(record).get();
-            var metadata = result.getRecordMetadata();
-            return new PublishResult(metadata.topic(), metadata.partition(), metadata.offset());
+            logPublished(event.messageId(), result);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new PublishFailedException(topic, event.messageId(), e);

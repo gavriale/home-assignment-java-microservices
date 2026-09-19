@@ -13,11 +13,11 @@ import com.alex.messaging.event.UpdateRequested;
  */
 public interface MessagePublisher {
 
-    PublishResult publishCreate(CreateRequested event);
+    void publishCreate(CreateRequested event);
 
-    PublishResult publishUpdate(UpdateRequested event);
+    void publishUpdate(UpdateRequested event);
 
-    PublishResult publishDelete(DeleteRequested event);
+    void publishDelete(DeleteRequested event);
 
     ReadReply publishReadAndAwaitReply(ReadRequested event);
 }

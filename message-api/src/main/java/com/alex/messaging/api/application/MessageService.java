@@ -6,8 +6,6 @@ import com.alex.messaging.event.DeleteRequested;
 import com.alex.messaging.event.ReadReply;
 import com.alex.messaging.event.ReadRequested;
 import com.alex.messaging.event.UpdateRequested;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
@@ -18,8 +16,6 @@ import java.time.Clock;
  */
 @Service
 public class MessageService {
-
-    private static final Logger log = LoggerFactory.getLogger(MessageService.class);
 
     private final MessagePublisher publisher;
     private final EventIdGenerator eventIdGenerator;
@@ -33,22 +29,19 @@ public class MessageService {
 
     public MessageAccepted create(int messageId, String msg, String correlationId) {
         var event = new CreateRequested(eventIdGenerator.newEventId(), messageId, msg, clock.instant(), correlationId);
-        var result = publisher.publishCreate(event);
-        logPublished(messageId, result);
+        publisher.publishCreate(event);
         return new MessageAccepted(event.eventId(), messageId, correlationId);
     }
 
     public MessageAccepted update(int messageId, String msg, String correlationId) {
         var event = new UpdateRequested(eventIdGenerator.newEventId(), messageId, msg, clock.instant(), correlationId);
-        var result = publisher.publishUpdate(event);
-        logPublished(messageId, result);
+        publisher.publishUpdate(event);
         return new MessageAccepted(event.eventId(), messageId, correlationId);
     }
 
     public MessageAccepted delete(int messageId, String correlationId) {
         var event = new DeleteRequested(eventIdGenerator.newEventId(), messageId, clock.instant(), correlationId);
-        var result = publisher.publishDelete(event);
-        logPublished(messageId, result);
+        publisher.publishDelete(event);
         return new MessageAccepted(event.eventId(), messageId, correlationId);
     }
 
@@ -57,10 +50,5 @@ public class MessageService {
         ReadReply reply = publisher.publishReadAndAwaitReply(event);
         String msg = reply.msg().orElseThrow(() -> new MessageNotFoundException(messageId));
         return new MessageView(messageId, msg);
-    }
-
-    private void logPublished(int messageId, PublishResult result) {
-        log.info("published id={} topic={} partition={} offset={}",
-                messageId, result.topic(), result.partition(), result.offset());
     }
 }
