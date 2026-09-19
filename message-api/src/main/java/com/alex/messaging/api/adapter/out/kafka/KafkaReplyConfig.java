@@ -15,7 +15,7 @@ import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.support.TopicPartitionOffset;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 
 /**
  * The reply container manually assigns this instance's single dedicated partition (via
@@ -31,7 +31,7 @@ public class KafkaReplyConfig {
     @Bean
     public ConsumerFactory<String, ReadReply> replyConsumerFactory(KafkaProperties kafkaProperties) {
         var props = kafkaProperties.buildConsumerProperties();
-        var deserializer = new JsonDeserializer<>(ReadReply.class);
+        var deserializer = new JacksonJsonDeserializer<>(ReadReply.class);
         deserializer.addTrustedPackages("com.alex.messaging.event");
         deserializer.setUseTypeHeaders(false);
         return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);

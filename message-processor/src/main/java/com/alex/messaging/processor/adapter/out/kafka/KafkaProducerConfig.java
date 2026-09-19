@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 
 /**
  * MS-2's producer side: replies on {@code messages.read.reply.v1} (via the listener container
@@ -20,7 +20,7 @@ public class KafkaProducerConfig {
     public ProducerFactory<String, Object> producerFactory(KafkaProperties kafkaProperties) {
         var factory = new DefaultKafkaProducerFactory<String, Object>(kafkaProperties.buildProducerProperties());
         factory.setKeySerializer(new StringSerializer());
-        factory.setValueSerializer(new JsonSerializer<>());
+        factory.setValueSerializer(new JacksonJsonSerializer<>());
         return factory;
     }
 

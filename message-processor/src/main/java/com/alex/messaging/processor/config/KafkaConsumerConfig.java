@@ -17,7 +17,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 
 /**
  * One consumer group and one listener container factory per write operation (CLAUDE.md §5.5):
@@ -110,7 +110,7 @@ public class KafkaConsumerConfig {
         var props = kafkaProperties.buildConsumerProperties();
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, consumerProperties.maxPollRecords());
-        var jsonDeserializer = new JsonDeserializer<>(targetType);
+        var jsonDeserializer = new JacksonJsonDeserializer<>(targetType);
         jsonDeserializer.addTrustedPackages("com.alex.messaging.event");
         jsonDeserializer.setUseTypeHeaders(false);
         var deserializer = new ErrorHandlingDeserializer<>(jsonDeserializer);
