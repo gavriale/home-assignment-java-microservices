@@ -9,7 +9,7 @@ import com.alex.messaging.event.UpdateRequested;
 /**
  * Outbound port for publishing events to Kafka. The Kafka implementation lives in
  * {@code adapter/out/kafka} — this interface exists so {@link MessageService} is
- * unit-testable with a fake, no broker required (Ports & Adapters, see CLAUDE.md §5.8).
+ * unit-testable with a fake, no broker required (Ports & Adapters).
  */
 public interface MessagePublisher {
 

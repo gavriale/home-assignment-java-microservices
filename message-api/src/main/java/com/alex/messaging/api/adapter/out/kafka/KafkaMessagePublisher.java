@@ -29,11 +29,11 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Publishes every event keyed by {@code messageId} as a String — same key, same partition,
- * ordered delivery per entity (CLAUDE.md §5.1). Blocks briefly on the send future so the
+ * ordered delivery per entity. Blocks briefly on the send future so the
  * caller can log the actual partition/offset the record landed on, not just the intent to
  * publish; cheap on the virtual-thread-per-request web layer this runs behind. The
  * correlation id is carried both in the event body and as a Kafka header, so MS-2 (and any
- * DLT tooling) can read it without deserializing the payload (CLAUDE.md §5.10).
+ * DLT tooling) can read it without deserializing the payload.
  */
 @Component
 public class KafkaMessagePublisher implements MessagePublisher {
@@ -95,8 +95,7 @@ public class KafkaMessagePublisher implements MessagePublisher {
      * The one place every operation's "published id=... topic=... partition=... offset=..."
      * line is logged — {@link #send} and {@link #publishReadAndAwaitReply} both call this with
      * their own {@link SendResult} rather than threading publish metadata back up through
-     * {@code MessageService}, which never needed it for anything but this log line
-     * (CLAUDE.md §5.10).
+     * {@code MessageService}, which never needed it for anything but this log line.
      */
     private void logPublished(int messageId, SendResult<String, Object> result) {
         var metadata = result.getRecordMetadata();

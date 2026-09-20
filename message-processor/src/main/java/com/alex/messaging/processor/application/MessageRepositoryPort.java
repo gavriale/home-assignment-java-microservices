@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * Outbound port to the database. The JPA implementation lives in
  * {@code adapter/out/persistence} — this interface exists so the operation handlers are
- * unit-testable with a fake, no database required (Ports & Adapters, CLAUDE.md §5.8).
+ * unit-testable with a fake, no database required (Ports & Adapters).
  */
 public interface MessageRepositoryPort {
 

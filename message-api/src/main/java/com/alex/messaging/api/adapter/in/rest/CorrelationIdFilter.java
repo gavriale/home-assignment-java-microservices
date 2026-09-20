@@ -16,8 +16,8 @@ import java.util.UUID;
 
 /**
  * Accepts an inbound {@code X-Correlation-Id}, or mints one, and puts it in MDC for the
- * lifetime of the request so every log line in this call can be tied back to it (CLAUDE.md
- * §5.10). The same id is echoed on the response and carried onto the Kafka event.
+ * lifetime of the request so every log line in this call can be tied back to it.
+ * The same id is echoed on the response and carried onto the Kafka event.
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

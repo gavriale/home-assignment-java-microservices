@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /**
  * Small framework-level collaborators (clock, id generator) as beans rather than static calls,
- * so anything depending on them can be unit-tested without mocking statics (CLAUDE.md §5.11).
+ * so anything depending on them can be unit-tested without mocking statics.
  */
 @Configuration
 public class CoreBeansConfig {

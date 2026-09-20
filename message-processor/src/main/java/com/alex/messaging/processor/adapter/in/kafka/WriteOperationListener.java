@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * One listener method per operation topic, each bound to its own consumer-group container
- * factory (CLAUDE.md §5.5). The correlation id is restored from the Kafka header into MDC so
+ * factory. The correlation id is restored from the Kafka header into MDC so
  * every log line for this record ties back to the originating HTTP request.
  */
 @Component

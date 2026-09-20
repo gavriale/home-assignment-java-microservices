@@ -10,7 +10,7 @@ import java.time.Duration;
 /**
  * {@code partitionCount} must match the partition count MS-2 provisions for
  * {@code messages.read.reply.v1} — both sides hardcode the same default because
- * {@code contracts} deliberately carries no configuration (CLAUDE.md §5.1, §5.3).
+ * {@code contracts} deliberately carries no configuration.
  */
 @ConfigurationProperties(prefix = "messaging.kafka.reply")
 @Validated

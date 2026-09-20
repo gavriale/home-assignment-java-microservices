@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * One place mapping every exception to an RFC 7807 {@link ProblemDetail} — consistent shape
- * for every error, no stack traces in responses (CLAUDE.md §5.9).
+ * for every error, no stack traces in responses.
  */
 @RestControllerAdvice
 public class ApiExceptionHandler {

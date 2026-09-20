@@ -28,7 +28,7 @@ public class JpaMessageRepositoryAdapter implements MessageRepositoryPort {
     @Transactional
     public void deleteIfExists(int id) {
         // JpaRepository#deleteById throws if absent; existsById first keeps this a true no-op
-        // on a duplicate or out-of-order delete (CLAUDE.md §5.7).
+        // on a duplicate or out-of-order delete.
         if (jpaRepository.existsById(id)) {
             jpaRepository.deleteById(id);
         }

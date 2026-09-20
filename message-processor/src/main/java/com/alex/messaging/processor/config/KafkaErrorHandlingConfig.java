@@ -15,8 +15,8 @@ import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
  * Retryable exceptions (DB unavailable, transient I/O) get exponential backoff, capped, then
  * the dead letter topic. Non-retryable exceptions — deserialization failures (surfaced via
  * {@code ErrorHandlingDeserializer}) and our own {@link InvalidEventException} — skip retries
- * entirely and go straight to the DLT: retrying a poison message forever blocks the partition
- * (CLAUDE.md §5.6). All four operations share one dead letter topic rather than one per
+ * entirely and go straight to the DLT: retrying a poison message forever blocks the partition.
+ * All four operations share one dead letter topic rather than one per
  * source topic — simpler to operate, at the cost of per-operation DLT lag visibility.
  */
 @Configuration

@@ -20,7 +20,7 @@ import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 
 /**
- * One consumer group and one listener container factory per write operation (CLAUDE.md §5.5):
+ * One consumer group and one listener container factory per write operation:
  * write-heavy and read-heavy paths scale and are monitored independently, at the cost of more
  * consumer groups to operate. {@code AckMode.RECORD} commits the offset only after the
  * listener method returns, i.e. after the DB transaction inside it has already committed —
@@ -85,7 +85,7 @@ public class KafkaConsumerConfig {
      * Setting {@code replyTemplate} is what makes the {@code @KafkaListener} method's return
      * value get published automatically to the {@code REPLY_TOPIC}/{@code REPLY_PARTITION}
      * headers carried on the inbound record, correlation id included — no {@code @SendTo}
-     * needed since the reply destination is per-request, not fixed (CLAUDE.md §5.3).
+     * needed since the reply destination is per-request, not fixed.
      */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ReadRequested> readListenerContainerFactory(
@@ -101,8 +101,7 @@ public class KafkaConsumerConfig {
     /**
      * {@link ErrorHandlingDeserializer} wraps the JSON deserializer so a malformed payload
      * throws inside the listener invocation (where the container's error handler can route it
-     * to the DLT) instead of killing the poll loop before the container ever sees it
-     * (CLAUDE.md §5.6).
+     * to the DLT) instead of killing the poll loop before the container ever sees it.
      */
     private <T> ConsumerFactory<String, T> consumerFactory(KafkaProperties kafkaProperties,
                                                             ConsumerProvisioningProperties consumerProperties,

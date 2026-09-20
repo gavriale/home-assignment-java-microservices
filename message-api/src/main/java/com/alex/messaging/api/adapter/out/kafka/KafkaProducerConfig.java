@@ -11,8 +11,8 @@ import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 
 /**
  * A producer typed {@code <String, Object>} rather than Boot's auto-configured
- * {@code <?, ?>} template: every record is keyed by the message id as a String (CLAUDE.md
- * §5.1), and the value serializer only needs to handle whichever concrete
+ * {@code <?, ?>} template: every record is keyed by the message id as a String,
+ * and the value serializer only needs to handle whichever concrete
  * {@code MessageEvent} the caller passes.
  */
 @Configuration

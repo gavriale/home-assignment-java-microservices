@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * Resolves the {@link OperationHandler} Strategy for a given write operation. Implemented as
  * an exhaustive {@code switch} over the sealed {@link WriteRequested} hierarchy rather than a
  * map lookup: a map only fails at runtime if an operation is missing its handler, whereas this
- * fails the build at compile time (CLAUDE.md §5.2) — the property that actually matters here.
+ * fails the build at compile time — the property that actually matters here.
  * Adding a sixth operation still costs exactly one new record, one new handler class, and one
  * new arm below.
  */

@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
 
-/** Exponential backoff for retryable consumer errors, capped, then dead-lettered (CLAUDE.md §5.6). */
+/** Exponential backoff for retryable consumer errors, capped, then dead-lettered. */
 @ConfigurationProperties(prefix = "messaging.kafka.retry")
 @Validated
 public record RetryProperties(@Min(0) int maxRetries, @NotNull Duration initialInterval,

@@ -22,7 +22,7 @@ import java.util.Optional;
 /**
  * Read is structurally different from the write operations — it produces a reply instead of
  * mutating state — so it is not part of the {@code OperationHandler} Strategy; it is its own
- * listener that returns the reply value directly (CLAUDE.md §5.3).
+ * listener that returns the reply value directly.
  */
 @Component
 public class ReadOperationListener {

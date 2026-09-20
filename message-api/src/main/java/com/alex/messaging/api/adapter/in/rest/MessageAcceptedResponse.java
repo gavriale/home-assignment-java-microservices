@@ -5,7 +5,7 @@ import com.alex.messaging.api.application.MessageAccepted;
 import java.util.UUID;
 
 /** REST-facing view of {@link MessageAccepted} — kept distinct so the application layer never
- * leaks directly into the wire response shape (DTO + Mapper, CLAUDE.md §5.8). */
+ * leaks directly into the wire response shape (DTO + Mapper). */
 public record MessageAcceptedResponse(UUID eventId, int id, String correlationId) {
 
     public static MessageAcceptedResponse from(MessageAccepted accepted) {
