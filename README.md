@@ -177,6 +177,20 @@ A transient failure (e.g. stop `postgres` mid-flight) instead gets exponential b
 the configured retry cap before landing on the DLT — see `message-processor`'s
 `RetryProperties` in `application.yml`.
 
+## Running the tests
+
+```bash
+./mvnw test
+```
+
+The application layer is built to be unit-tested: constructors take interfaces, so business
+logic can be exercised with hand-rolled fakes and no Spring context.
+`message-processor/src/test/java/.../application/` puts that into practice: the
+Create/Update/Delete operation handlers against a `MessageRepositoryPort` fake, plus an
+ordering test that dispatches Update-before-Create, Delete-before-Create, and a duplicate
+Create through the real `OperationHandlerRegistry`, demonstrating ADR-006's idempotency claim
+rather than just asserting it.
+
 ## What I'd add next, and why I didn't now
 
 Per the brief's instruction to keep this simple, the following were deliberately left out:
