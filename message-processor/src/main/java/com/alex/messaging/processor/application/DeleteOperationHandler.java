@@ -3,9 +3,9 @@ package com.alex.messaging.processor.application;
 import com.alex.messaging.event.DeleteRequested;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class DeleteOperationHandler implements OperationHandler<DeleteRequested> {
 
     private static final Logger log = LoggerFactory.getLogger(DeleteOperationHandler.class);

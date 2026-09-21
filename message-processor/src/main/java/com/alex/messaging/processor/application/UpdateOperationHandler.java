@@ -3,9 +3,9 @@ package com.alex.messaging.processor.application;
 import com.alex.messaging.event.UpdateRequested;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class UpdateOperationHandler implements OperationHandler<UpdateRequested> {
 
     private static final Logger log = LoggerFactory.getLogger(UpdateOperationHandler.class);
