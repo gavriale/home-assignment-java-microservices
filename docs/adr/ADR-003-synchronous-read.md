@@ -11,13 +11,17 @@ operations, and a `GET` is expected to return data, not just an acknowledgement.
 Request-reply, using Spring Kafka's `ReplyingKafkaTemplate`:
 
 - `message-api` publishes `ReadRequested` with `KafkaHeaders.REPLY_TOPIC` set to
-  `messages.read.reply.v1` and a `KafkaHeaders.CORRELATION_ID`, then blocks on the returned
-  future with a configurable timeout (default 3s).
-- `message-processor`'s `@KafkaListener` for `messages.read.v1` **returns** a `ReadReply`
-  value; Spring Kafka publishes it to the reply topic/partition carried on the inbound
-  record's headers automatically — no `@SendTo` needed, since the destination is per-request.
+  `messages.read.reply.v1`, then blocks on the returned future with a configurable timeout
+  (default 3s). The record also carries this project's own `Headers.CORRELATION_ID` (the
+  business `X-Correlation-Id`, for cross-service log tracing) — a separate thing from
+  `ReplyingKafkaTemplate`'s own internal `kafka_correlationId` header, which it generates and
+  matches automatically to correlate the eventual reply with this specific pending future.
+- `message-processor`'s `@KafkaListener` for `messages.read.v1` is annotated `@SendTo` (no
+  value) and **returns** a `ReadReply`; Spring Kafka publishes that return value to whatever
+  reply topic/partition was set on the inbound record's headers — the destination comes from
+  the request itself, not a fixed value on the annotation.
 - `message-api` maps the outcome to `200` (found), `404` (`MessageNotFoundException`), or
-  `504` (`ReplyTimeoutException`) via the shared `ProblemDetail` advice (see CLAUDE.md §5.9).
+  `504` (`ReplyTimeoutException`) via the shared `ProblemDetail` advice.
 
 **Scale-out subtlety:** if every `message-api` instance shared one consumer group on the reply
 topic, a reply could land on whichever instance Kafka assigned that partition to — not
