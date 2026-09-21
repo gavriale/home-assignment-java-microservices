@@ -82,10 +82,11 @@ public class KafkaConsumerConfig {
     }
 
     /**
-     * Setting {@code replyTemplate} is what makes the {@code @KafkaListener} method's return
-     * value get published automatically to the {@code REPLY_TOPIC}/{@code REPLY_PARTITION}
-     * headers carried on the inbound record, correlation id included — no {@code @SendTo}
-     * needed since the reply destination is per-request, not fixed.
+     * {@code replyTemplate} is the {@link KafkaTemplate} used to publish the reply.
+     * {@code ReadOperationListener.onRead()} is annotated {@code @SendTo}, which is what
+     * actually triggers publishing it — without that annotation, the return value would just
+     * be discarded. The destination (topic and partition) isn't fixed here; it's read from
+     * headers on the incoming request instead.
      */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ReadRequested> readListenerContainerFactory(
