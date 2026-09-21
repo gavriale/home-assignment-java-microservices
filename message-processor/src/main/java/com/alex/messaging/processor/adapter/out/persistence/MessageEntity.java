@@ -1,5 +1,6 @@
 package com.alex.messaging.processor.adapter.out.persistence;
 
+import com.alex.messaging.validation.MessageLimits;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -13,7 +14,7 @@ public class MessageEntity {
     @Id
     private Integer id;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = MessageLimits.MAX_MSG_LENGTH)
     private String msg;
 
     protected MessageEntity() {
