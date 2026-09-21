@@ -4,6 +4,11 @@ spring:
   threads:
     virtual:
       enabled: true
+  jackson:
+    deserialization:
+      # A decimal id (e.g. 5.7) would otherwise be silently truncated to 5 instead of
+      # rejected - real information loss, not harmless leniency.
+      accept-float-as-int: false
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
     producer:
